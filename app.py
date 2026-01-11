@@ -6,9 +6,25 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from PIL import Image
-import cv2
+
+# Try to import OpenCV; on headless servers prefer opencv-python-headless in requirements
+try:
+    import cv2
+except Exception as _cv2_err:
+    cv2 = None
 
 from shape_detector import ShapeDetector
+
+# If OpenCV failed to import, show a clear error in the app and stop
+if cv2 is None:
+    st.set_page_config(page_title="Shape & Contour Analyzer", page_icon="🔷", layout="wide")
+    st.title("🔷 Shape & Contour Analyzer")
+    st.error(
+        "OpenCV (cv2) failed to import.\n"
+        "If you're deploying to Streamlit Cloud, ensure `opencv-python-headless` is listed in `requirements.txt` and re-deploy.\n"
+        "Check the app logs for full details."
+    )
+    st.stop()
 
 st.set_page_config(page_title="Shape & Contour Analyzer", page_icon="🔷", layout="wide")
 st.title("🔷 Shape & Contour Analyzer")

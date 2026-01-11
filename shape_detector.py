@@ -5,8 +5,13 @@ from an image using classical OpenCV contour-based methods.
 """
 
 from typing import List, Tuple, Dict
-import cv2
 import numpy as np
+
+# Import cv2 lazily with a helpful error if missing
+try:
+    import cv2
+except Exception as _err:
+    cv2 = None
 
 
 class ShapeDetector:
@@ -26,7 +31,19 @@ class ShapeDetector:
 
         Returns annotated image, edge image, and list of detected objects with
         'shape', 'area', and 'perimeter'.
+
+        Raises
+        ------
+        RuntimeError
+            If OpenCV (`cv2`) is not available in the current environment.
         """
+        if cv2 is None:
+            # Provide a clear runtime error that users and logs can see on remote platforms
+            raise RuntimeError(
+                "OpenCV (cv2) is not available. On headless servers or Streamlit Cloud, "
+                "ensure `opencv-python-headless` is listed in `requirements.txt` and re-deploy."
+            )
+
         annotated = image.copy()
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
